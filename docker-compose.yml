@@ -1,0 +1,97 @@
+version: "3.3"
+services:
+   nginx:
+      depends_on:
+         - pgsql
+         - php
+      restart: always
+      build:
+        dockerfile: Dockerfile
+        context: ./nginx
+      environment:
+         TZ: America/Argentina/Buenos_Aires
+      ports:
+         - '8081:80'
+         - '8082:443' 
+      volumes:
+         - ./files:/var/www/html/
+      container_name: webrtc_ngnix
+   pgsql:
+      build:
+         dockerfile: Dockerfile
+         context: ./pgsql
+      restart: always
+      environment:
+         POSTGRES_USER: "root"
+         POSTGRES_PASSWORD: "root"
+         POSTGRES_DB: "webrtc"
+      ports:
+         - '5432:5432'
+      volumes:
+         - "./var/lib/pgdata:/var/lib/postgresql/data"
+      container_name: webrtc_pgsql
+   php:
+      #depends_on:
+         #- redis
+         #- mail
+      restart: always
+      build:
+         dockerfile: Dockerfile
+         context: ./php
+         args:
+            UID: 1000
+            GID: 1000
+      ports:
+         - '9002:9000' #php
+         - '8088:8088' #janus http
+         - '8089:8089' #janus https
+         - '8989:8989' #janus wss
+         - '8188:8188' #janus ws
+         - '7088:7088'
+      volumes:
+         - "./files:/var/www/html/" #Yii files
+      container_name: webrtc_php
+   #redis:
+   #   build:
+   #      dockerfile: Dockerfile
+   #      context: ./redis
+   #   container_name: webrtc_redis
+ #  mail:
+ #     build:
+ #        dockerfile: Dockerfile
+ #        context: ./mailhog
+ #     logging:
+ #        driver: 'none'
+ #     ports:
+ #        - 1025:1025 # smtp server
+ #        - 8025:8025 # web
+   coturn:
+     build:
+       context: ./coturn
+       dockerfile: ./Dockerfile
+     restart: always
+     volumes: #sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/front-selfsigned.key -out /etc/ssl/certs/front-selfsigned.crt
+       - ./coturn/conf/turnserver.conf:/etc/turnserver.conf:ro
+       - ./coturn/conf/privkey.pem:/etc/ssl/private/privkey.pem:ro
+       - ./coturn/conf/cert.pem:/etc/ssl/certs/cert.pem:ro
+     ports:
+ ## STUN/TURN
+       - "3478:3478"
+       - "3478:3478/udp"
+       - "3479:3479"
+       - "3479:3479/udp"
+     container_name: webrtc_coturn   
+     
+   rabbitmq:
+     build:
+        dockerfile: Dockerfile
+        context: ./rabbitmq
+     restart: unless-stopped
+     environment:
+        TZ: America/Argentina/Buenos_Aires
+     ports:
+        - '5672:5672'
+        - '15675:15675' #web MQTT
+        - '1883:1883' # MQTT
+        - '15692:15692'
+     container_name: webrtc_rabbitmq     

@@ -1,0 +1,31 @@
+server {
+    listen      80;
+    server_name y2aa-backend.test www.y2aa-backend.test;
+    root        /var/www/html/backend/web;
+
+    access_log /var/log/nginx/backend-access.log;
+    error_log  /var/log/nginx/backend-error.log;
+
+    location / {
+        # try to serve file directly, fallback to rewrite
+        try_files $uri @rewriteapp;
+    }
+    location @rewriteapp {
+        rewrite ^(.*)$ /index.php/$1 last;
+    }
+    
+    location ~ ^/index\.php(/|$) {
+        fastcgi_pass php:9000;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        include fastcgi.conf;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+    }
+    
+    location ~* \.(css|less|js|jpg|png|gif)$ {
+       add_header Cache-Control "no-cache, no-store, must-revalidate";
+       add_header Pragma "no-cache";
+       expires 0;
+    }      
+}
