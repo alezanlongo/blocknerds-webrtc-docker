@@ -349,8 +349,8 @@ RUN set -x \
 RUN mkdir -p /home/www-data; \
 	chown -R www-data:www-data /home/www-data; \
 	touch /home/www-data/.bashrc; \
-	usermod -u 1000 www-data && usermod -d /home/www-data www-data && groupmod -g 1000 www-data
-	
+	usermod -u 1000 www-data && usermod -d /home/www-data www-data && groupmod -g 1000 www-data; \
+	chown www-data:www-data -R /home/www-data
 
 RUN echo 'alias l="ls -CF"' >> ~/.bashrc
 RUN echo 'alias la="ls -A"' >> ~/.bashrc
