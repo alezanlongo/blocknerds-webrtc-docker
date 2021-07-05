@@ -333,8 +333,14 @@ RUN cd /tmp; \
 	make install; \
 	make configs
 	
-RUN sed -i "s/localhost:1883/rabbitmq:1883/g" /opt/janus/etc/janus/janus.transport.mqtt.jcfg
+RUN sed -i -e "s/localhost:1883/rabbitmq:1883/g" /opt/janus/etc/janus/janus.transport.mqtt.jcfg
+RUN sed -i -e "s/wss = false/wss = true/" /opt/janus/etc/janus/janus.transport.websockets.jcfg 
+RUN sed -i -e "s/#wss_port/wss_port/" /opt/janus/etc/janus/janus.transport.websockets.jcfg 
+RUN sed -i -e "s:#cert_pem =\s.*:cert_pem = \"/etc/ssl/certs/front-selfsigned.crt\":" /opt/janus/etc/janus/janus.transport.websockets.jcfg
+RUN sed -i -e "s:#cert_key =\s.*:cert_key = \"/etc/ssl/private/front-selfsigned.key\":" /opt/janus/etc/janus/janus.transport.websockets.jcfg
 
+COPY ./cert/front-selfsigned.key /etc/ssl/private/
+COPY ./cert/front-selfsigned.crt /etc/ssl/certs/
 ###
 ### Verify
 ###
