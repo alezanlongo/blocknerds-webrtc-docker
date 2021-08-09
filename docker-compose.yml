@@ -56,15 +56,15 @@ services:
    #      dockerfile: Dockerfile
    #      context: ./redis
    #   container_name: webrtc_redis
- #  mail:
- #     build:
- #        dockerfile: Dockerfile
- #        context: ./mailhog
- #     logging:
- #        driver: 'none'
- #     ports:
- #        - 1025:1025 # smtp server
- #        - 8025:8025 # web
+   mail:
+      build:
+         dockerfile: Dockerfile
+         context: ./mailhog
+      logging:
+         driver: 'none'
+      ports:
+         - 1025:1025 # smtp server
+         - 8025:8025 # web
    coturn:
      build:
        context: ./coturn

@@ -276,14 +276,17 @@ RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '756890a4488ce9024
 RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/
+#RUN apt install -y librabbitmq-dev
+
 ##Janus
 RUN apt update
 RUN apt install -y libmicrohttpd-dev libjansson-dev libssl-dev wget libsofia-sip-ua-dev libglib2.0-dev libopus-dev libogg-dev libcurl4-openssl-dev liblua5.3-dev libusrsctp-dev doxygen graphviz git cmake python3-pip libconfig-dev gengetopt libtool automake pkg-config nano libzip-dev libpq-dev
-
+RUN pecl install xdebug
 RUN docker-php-ext-install zip
 #RUN docker-php-ext-install pdo
 RUN docker-php-ext-install pgsql
 RUN docker-php-ext-install pdo_pgsql
+RUN docker-php-ext-enable xdebug
 
 RUN pip3 install --user meson
 RUN pip3 install ninja
@@ -333,14 +336,30 @@ RUN cd /tmp; \
 	make install; \
 	make configs
 	
+RUN apt install -y librabbitmq-dev;
+RUN cd /tmp; \
+	pecl download amqp-1.11.0beta; \
+	tar -xf amqp-1.11.0beta.tgz; \
+	cd amqp-1.11.0beta; \
+	phpize; \
+	./configure; \
+	make; \
+	make install; 
+
+RUN pecl install amqp-1.11.0beta --with-librabbitmq-dir="/usr/include/" -f
 RUN sed -i -e "s/localhost:1883/rabbitmq:1883/g" /opt/janus/etc/janus/janus.transport.mqtt.jcfg
 RUN sed -i -e "s/wss = false/wss = true/" /opt/janus/etc/janus/janus.transport.websockets.jcfg 
 RUN sed -i -e "s/#wss_port/wss_port/" /opt/janus/etc/janus/janus.transport.websockets.jcfg 
 RUN sed -i -e "s:#cert_pem =\s.*:cert_pem = \"/etc/ssl/certs/front-selfsigned.crt\":" /opt/janus/etc/janus/janus.transport.websockets.jcfg
 RUN sed -i -e "s:#cert_key =\s.*:cert_key = \"/etc/ssl/private/front-selfsigned.key\":" /opt/janus/etc/janus/janus.transport.websockets.jcfg
+RUN sed -i -e "s:#string_ids = true:string_ids = true:" /opt/janus/etc/janus/janus.plugin.videoroom.jcfg
+RUN sed -i -e "s:#admin_key = \"supersecret\":admin_key = \"supersecret\":" /opt/janus/etc/janus/janus.plugin.videoroom.jcfg
+RUN sed -i -e "s:admin_http = false:admin_http = true:" /opt/janus/etc/janus/janus.transport.http.jcfg
+
 
 COPY ./cert/front-selfsigned.key /etc/ssl/private/
 COPY ./cert/front-selfsigned.crt /etc/ssl/certs/
+
 ###
 ### Verify
 ###

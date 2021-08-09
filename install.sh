@@ -22,7 +22,8 @@ echo "Copying into nginx (nginx/cert)...\n\r"
 cp -f keys/front-selfsigned.key nginx/cert/ && cp -f keys/front-selfsigned.crt nginx/cert/
 echo "Copying into php/janus (php/cert)...\n\r"
 cp -f keys/front-selfsigned.key php/cert/ && cp -f keys/front-selfsigned.crt php/cert/
-
+echo "Copying into rabbitMQ...\n\r"
+cp -f keys/front-selfsigned.key php/cert/ && cp -f keys/front-selfsigned.crt rabbitmq/cert/
 
 
 
