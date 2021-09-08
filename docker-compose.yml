@@ -22,6 +22,7 @@ services:
          context: ./pgsql
       restart: always
       environment:
+         TZ: America/Argentina/Buenos_Aires
          POSTGRES_USER: "root"
          POSTGRES_PASSWORD: "root"
          POSTGRES_DB: "webrtc"
@@ -41,6 +42,8 @@ services:
          args:
             UID: 1000
             GID: 1000
+      environment:
+         TZ: America/Argentina/Buenos_Aires
       ports:
          - '9002:9000' #php
          - '8088:8088' #janus http
@@ -62,6 +65,8 @@ services:
          context: ./mailhog
       logging:
          driver: 'none'
+      environment:
+         TZ: America/Argentina/Buenos_Aires
       ports:
          - 1025:1025 # smtp server
          - 8025:8025 # web

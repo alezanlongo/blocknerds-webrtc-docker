@@ -267,6 +267,12 @@ RUN apt-get update \
             libcap2-bin \
  && rm -rf /var/lib/apt/lists/*
 
+RUN apt update
+RUN apt install -y sqlite
+RUN apt install -y nano
+RUN apt install -y less
+
+
 USER nobody:nogroup
 
 EXPOSE 3478 3478/udp

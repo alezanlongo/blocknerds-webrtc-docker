@@ -282,6 +282,7 @@ RUN mv composer.phar /usr/local/bin/
 RUN apt update
 RUN apt install -y libmicrohttpd-dev libjansson-dev libssl-dev wget libsofia-sip-ua-dev libglib2.0-dev libopus-dev libogg-dev libcurl4-openssl-dev liblua5.3-dev libusrsctp-dev doxygen graphviz git cmake python3-pip libconfig-dev gengetopt libtool automake pkg-config nano libzip-dev libpq-dev
 RUN pecl install xdebug
+RUN docker-php-ext-install sockets
 RUN docker-php-ext-install zip
 #RUN docker-php-ext-install pdo
 RUN docker-php-ext-install pgsql
@@ -355,6 +356,11 @@ RUN sed -i -e "s:#cert_key =\s.*:cert_key = \"/etc/ssl/private/front-selfsigned.
 RUN sed -i -e "s:#string_ids = true:string_ids = true:" /opt/janus/etc/janus/janus.plugin.videoroom.jcfg
 RUN sed -i -e "s:#admin_key = \"supersecret\":admin_key = \"supersecret\":" /opt/janus/etc/janus/janus.plugin.videoroom.jcfg
 RUN sed -i -e "s:admin_http = false:admin_http = true:" /opt/janus/etc/janus/janus.transport.http.jcfg
+RUN sed -i -e "s:#token_auth = true:token_auth = true:" /opt/janus/etc/janus/janus.jcfg
+#RUN sed -i -e "s:#stun_server = \"stun.voip.eutelia.it\":stun_server = \"coturn\":g" /opt/janus/etc/janus/janus.jcfg
+#RUN sed -i -e "s:#turn_server = \"myturnserver.com\":turn_server = \"coturn\":g" /opt/janus/etc/janus/janus.jcfg
+#RUN sed -i -e "s:#stun_port = 3478:stun_port = 3478:g" /opt/janus/etc/janus/janus.jcfg
+#RUN sed -i -e "s:#turn_port = 3478:turn_port = 3478:g" /opt/janus/etc/janus/janus.jcfg
 
 
 COPY ./cert/front-selfsigned.key /etc/ssl/private/
