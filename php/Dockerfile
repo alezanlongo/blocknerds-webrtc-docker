@@ -280,7 +280,7 @@ RUN mv composer.phar /usr/local/bin/
 
 ##Janus
 RUN apt update
-RUN apt install -y libmicrohttpd-dev libjansson-dev libssl-dev wget libsofia-sip-ua-dev libglib2.0-dev libopus-dev libogg-dev libcurl4-openssl-dev liblua5.3-dev libusrsctp-dev doxygen graphviz git cmake python3-pip libconfig-dev gengetopt libtool automake pkg-config nano libzip-dev libpq-dev
+RUN apt install -y libmicrohttpd-dev libjansson-dev libssl-dev wget libsofia-sip-ua-dev libglib2.0-dev libopus-dev libogg-dev libcurl4-openssl-dev liblua5.3-dev libusrsctp-dev doxygen graphviz  git cmake python3-pip libconfig-dev gengetopt libtool automake pkg-config nano libzip-dev libpq-dev
 RUN pecl install xdebug
 RUN docker-php-ext-install sockets
 RUN docker-php-ext-install zip
@@ -306,7 +306,20 @@ RUN cd /tmp; \
 	./configure --prefix=/usr --enable-openssl; \
 	make shared_library && make install
 	
+#	RUN cd /tmp; \
+#	git clone https://github.com/cisco/libsrtp.git; \
+#	cd libsrtp; \
+#	./configure --prefix=/usr --enable-openssl; \
+#	make shared_library && make install
 
+	
+RUN cd /tmp; \
+	git clone https://github.com/sctplab/usrsctp; \
+	cd usrsctp; \
+	./bootstrap; \
+	./configure --prefix=/usr --disable-programs --disable-inet --disable-inet6; \
+	make && make install
+	
 RUN cd /tmp; \
 	git clone https://libwebsockets.org/repo/libwebsockets; \
 	cd libwebsockets; \
